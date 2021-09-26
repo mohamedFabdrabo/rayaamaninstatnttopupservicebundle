@@ -249,9 +249,7 @@
 				<json library="Jackson" unmarshalTypeName="com.raya.aman.topupservice.dto.mobifindto.TopUpPaymentRequest" />
 			</ummarshal>
 			<to uri="{{mobifinLoginURL}}" />
-			<marshal>
-				<json library="Jackson" unmarshalTypeName="com.raya.aman.topupservice.dto.mobifindto.LoginDTO" />
-			</marshal>
+
 		</route>
 
 
