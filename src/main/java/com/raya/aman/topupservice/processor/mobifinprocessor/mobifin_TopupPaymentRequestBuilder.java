@@ -13,6 +13,7 @@ import com.paymentplaform.raya.gate.init.MessageBody;
 import com.paymentplaform.raya.gate.init.MessageHeader;
 import com.raya.aman.logger.AmanLogger;
 import com.raya.aman.topupservice.dto.TopupRequestDto;
+import com.raya.aman.topupservice.dto.mobifindto.*;
 import com.raya.aman.util.configuration.PropertyInit;
 import com.raya.aman.util.exception.CustomException;
 import org.apache.camel.Exchange;
@@ -64,10 +65,27 @@ public class mobifin_TopupPaymentRequestBuilder implements Processor {
 		String password = exchange.getContext().resolvePropertyPlaceholders(
 				"{{password}}");
 
-		Object body  = exchange.getIn().getBody();
-		String token = ((JSONObject) body).getJSONObject("data").getString("access_token");
+		LoginResponseDTO loginResponse  = exchange.getIn().getBody(
+				LoginResponseDTO.class);
+		String token = loginResponse.getData().getAccess_token();
 
 		// Create The request
+
+		FromUserDTO fromUser = new FromUserDTO(username);
+		PaymentDTO payment = new PaymentDTO(""+roundAmount(topupAmount),"EMONEY","EGP","0" );
+		PaymentDTO[] paymentArray = new PaymentDTO[1];
+		paymentArray[0] = payment;
+		TopUpPaymentData data = new TopUpPaymentData(fromUser,
+				paymentArray,
+				generateServiceID(networkCode),
+				generateProductID(networkCode)
+		,topupRequestDto.getRefrenceNumber(),
+				"",
+				generateRequestId(topupRequestDto.getRefrenceNumber()),
+				password);
+		TopUpPaymentRequest requestBody = new TopUpPaymentRequest(data);
+
+		/*
 		JSONObject requestBody = new JSONObject();
 		JSONObject data = new JSONObject();
 
@@ -96,7 +114,7 @@ public class mobifin_TopupPaymentRequestBuilder implements Processor {
 
 		// top up request
 		requestBody.put("data",data);
-
+		*/
 		exchange.getIn().setBody(requestBody);
 		exchange.getIn().setHeaders(new LinkedHashMap<String, Object>());
 		exchange.getIn().setHeader(Exchange.HTTP_METHOD, HttpMethod.POST);

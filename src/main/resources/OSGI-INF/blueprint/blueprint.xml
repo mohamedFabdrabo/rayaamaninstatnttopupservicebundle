@@ -163,6 +163,10 @@
 			<process ref="mobifin_requestHandler" />
 
 			<to uri="direct-vm:mobifin_loginRoute" />
+			<unmarshal>
+				<json library="Jackson"
+					  unmarshalTypeName="com.raya.aman.topupservice.dto.mobifindto.LoginResponseDTO" />
+			</unmarshal>
 
 			<to uri="direct-vm:mobifin_topupServiceRout" />
 
@@ -231,6 +235,7 @@
 			<log message="Login request body  :  ${in.body} " logName="{{brokerLogName}}" />
 
 			<process ref="loginHandler" />
+
 			<to uri="{{mobifinLoginURL}}?proxyAuthMethod=Basic?proxyAuthUsername=${admin_username}?proxyAuthPassword=${admin_password}"/>
 			<log message="Login response headers  :  ${in.headers} "
 				 logName="{{brokerLogName}}" />
@@ -240,8 +245,13 @@
 
 		<route id="mobifin_posgatewayRoute">
 			<from uri="direct-vm:mobifin_posgatewayRoute" />
-			<to
-					uri="{{mobifinLoginURL}}" />
+			<ummarshal>
+				<json library="Jackson" unmarshalTypeName="com.raya.aman.topupservice.dto.mobifindto.TopUpPaymentRequest" />
+			</ummarshal>
+			<to uri="{{mobifinLoginURL}}" />
+			<marshal>
+				<json library="Jackson" unmarshalTypeName="com.raya.aman.topupservice.dto.mobifindto.LoginDTO" />
+			</marshal>
 		</route>
 
 
