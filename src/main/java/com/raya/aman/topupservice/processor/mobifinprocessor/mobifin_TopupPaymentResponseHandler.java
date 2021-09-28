@@ -4,6 +4,7 @@ import com.paymentplaform.raya.gate.init.InitPaymentResponse;
 import com.paymentplaform.raya.gate.init.InitPaymentResponseType;
 import com.raya.aman.topupservice.dto.TopupRequestDto;
 import com.raya.aman.topupservice.dto.TopupResponseDto;
+import com.raya.aman.topupservice.dto.mobifindto.response.TopUpPaymentResponse;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.json.JSONObject;
@@ -16,16 +17,16 @@ public class mobifin_TopupPaymentResponseHandler implements Processor {
 		TopupRequestDto requestDto = exchange.getProperty("topupRequestDto",
 				TopupRequestDto.class);
 
-		JSONObject response = exchange.getIn().getBody(
-				JSONObject.class);
+		TopUpPaymentResponse response = exchange.getIn().getBody(
+				TopUpPaymentResponse.class);
 		if (response != null) {
-			JSONObject initPaymentResponse = response;
+			TopUpPaymentResponse initPaymentResponse = response;
 
 			responsDto.getStatus().setCode(
-					Integer.valueOf(initPaymentResponse.getString("responseCode")));
-			responsDto.getStatus().setMessage(initPaymentResponse.getString("responseMessage"));
+					Integer.valueOf(initPaymentResponse.getResponseCode()));
+			responsDto.getStatus().setMessage(initPaymentResponse.getResponseMessage());
 			responsDto.setRefrenceNumber(requestDto.getRefrenceNumber());
-			responsDto.setTransactionNumber(initPaymentResponse.getJSONObject("data").getString("transactionStatus"));
+			responsDto.setTransactionNumber(initPaymentResponse.getData().getTransactionStatus());
 		} else {
 			responsDto.getStatus().setCode(300001);
 			responsDto.getStatus().setMessage("Error during charge");

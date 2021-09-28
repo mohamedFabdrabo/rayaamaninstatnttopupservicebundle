@@ -65,9 +65,9 @@ public class mobifin_TopupPaymentRequestBuilder implements Processor {
 		String password = exchange.getContext().resolvePropertyPlaceholders(
 				"{{password}}");
 
-		LoginResponseDTO loginResponse  = exchange.getIn().getBody(
-				LoginResponseDTO.class);
-		String token = loginResponse.getData().getAccess_token();
+
+		String token =  exchange.getContext().resolvePropertyPlaceholders(
+				"{{token}}");
 
 		// Create The request
 
