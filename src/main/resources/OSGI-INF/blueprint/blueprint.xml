@@ -24,7 +24,7 @@
 	<bean id="topupErrorHandler" class="com.raya.aman.topupservice.processor.TopupErrorHandler" />
 
 	<bean id="LoginHandler" class="com.raya.aman.topupservice.processor.mobifinprocessor.LoginHandler" />
-	<bean id="LoginHandler" class="com.raya.aman.topupservice.processor.mobifinprocessor.loginResponseHandler" />
+	<bean id="loginResponseHandler" class="com.raya.aman.topupservice.processor.mobifinprocessor.loginResponseHandler" />
 
 	<bean id="mobifin_RequestHandler" class="com.raya.aman.topupservice.processor.mobifinprocessor.mobifin_RequestHandler" />
 	<bean id="mobifin_topupPaymentRequestBuilder"
