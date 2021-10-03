@@ -13,7 +13,12 @@ public class LoginResponseHandler implements Processor {
     public void process(Exchange exchange) throws Exception {
         LoginResponseDTO loginResponse  = exchange.getIn().getBody(
                 LoginResponseDTO.class);
-        String token = loginResponse.getData().getAccess_token();
-        exchange.setProperty("token", token);
+        if(loginResponse!=null) {
+            String token = loginResponse.getData().getAccess_token();
+            exchange.setProperty("token", token);
+        }
+        else {
+            exchange.setProperty("token", "-1");
+        }
     }
 }

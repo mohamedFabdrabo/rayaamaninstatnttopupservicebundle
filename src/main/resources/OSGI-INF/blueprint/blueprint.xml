@@ -151,7 +151,8 @@
 			<to
 				uri="cxf:bean:amanposgw?dataFormat=POJO&amp;continuationTimeout={{consumerTimeOut}}" />
 		</route>
-
+<!--/////////////////////////////////////////////////mobifin Routes////////////////////////////////////////////////////-->
+<!--/////////////////////////////////////////////////mobifin Routes////////////////////////////////////////////////////-->
 
 		<route id="mobifin_mainTopupServiceRout">
 			<from uri="direct-vm:mobifin_mainTopupServiceRout" />
@@ -164,10 +165,7 @@
 			<process ref="mobifin_requestHandler" />
 
 			<to uri="direct-vm:mobifin_loginRoute" />
-			<unmarshal>
-				<json library="Jackson"
-					  unmarshalTypeName="com.raya.aman.topupservice.dto.mobifindto.LoginResponseDTO" />
-			</unmarshal>
+
 
 			<to uri="direct-vm:mobifin_topupServiceRout" />
 
@@ -237,12 +235,45 @@
 			<log message="Login request body  :  ${in.body} " logName="{{brokerLogName}}" />
 
 			<process ref="loginHandler" />
+			<doTry>
+			<setProperty propertyName="loginResponseCode">
+				<simple>1</simple>
+			</setProperty>
+			<to uri="{{mobifinLoginURL}}?proxyAuthMethod=Basic?proxyAuthUsername={{admin_username}}?proxyAuthPassword={{admin_password}}"/>
 
-			<to uri="{{mobifinLoginURL}}?proxyAuthMethod=Basic?proxyAuthUsername=${admin_username}?proxyAuthPassword=${admin_password}"/>
+			<unmarshal>
+				<json library="Jackson"
+					  unmarshalTypeName="com.raya.aman.topupservice.dto.mobifindto.LoginResponseDTO" />
+			</unmarshal>
+
 			<log message="Login response headers  :  ${in.headers} "
 				 logName="{{brokerLogName}}" />
 			<log message="Login response body  :  ${in.body} " logName="{{brokerLogName}}" />
+				<doCatch>
+					<exception>java.lang.IndexOutOfBoundsException</exception>
+					<handled>
+						<constant>true</constant>
+					</handled>
+
+					<log message="IndexOutOfBoundsException  " logName="{{brokerLogName}}" />
+				</doCatch>
+				<doCatch>
+					<exception>java.lang.Throwable</exception>
+					<handled>
+						<constant>true</constant>
+					</handled>
+					<log message="Unsuccessful login  " logName="{{brokerLogName}}" />
+					<setProperty propertyName="loginResponseCode">
+						<simple>300001</simple>
+					</setProperty>
+				</doCatch>
+			</doTry>
+
 			<process ref="loginResponseHandler" />
+
+			<log message="Login response headers  :  ${in.headers} "
+				 logName="{{brokerLogName}}" />
+			<log message="Login response body  :  ${in.body} " logName="{{brokerLogName}}" />
 		</route>
 
 		<route id="mobifin_posgatewayRoute">
@@ -251,7 +282,9 @@
 				<json library="Jackson" unmarshalTypeName="com.raya.aman.topupservice.dto.mobifindto.TopUpPaymentRequest" />
 			</marshal>
 			<to uri="{{mobifinPaymentURL}}" />
-
+			<unmarshal>
+				<json library="Jackson" unmarshalTypeName="com.raya.aman.topupservice.dto.mobifindto.response.TopUpPaymentResponse" />
+			</unmarshal>
 		</route>
 
 
